@@ -1,0 +1,23 @@
+{
+    "server": {
+        "online": true,
+        "hostname": "bea2abb12c0c",
+        "os": "Debian GNU/Linux 13 (trixie)",
+        "version": "13"
+    },
+    "cpu": {
+        "usage_percent": 6.0,
+        "load_1m": 0.2,
+        "load_5m": 0.31,
+        "load_15m": 0.29,
+        "cores": 4,
+        "frequency_mhz": 700.0
+    },
+    "memory": {
+        "total_bytes": 16536907776,
+        "used_bytes": 6765465600,
+        "free_bytes": 431845376,
+        "available_bytes": 9771442176,
+        "usage_percent": 40.9
+    }
+}

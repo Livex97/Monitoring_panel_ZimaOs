@@ -11,9 +11,10 @@ class Settings(BaseSettings):
     monitor_api_key: Optional[str] = None
     
     # Host root mounts for docker container environment
-    host_proc: str = "/proc"
-    host_sys: str = "/sys"
-    docker_socket: str = "unix://var/run/docker.sock"
+    host_proc: str = "/host/proc"
+    host_sys: str = "/host/sys"
+    host_etc: str = "/host/etc"
+    docker_socket: str = "unix:///var/run/docker.sock"
     
     # ZimaOS local endpoint if available
     zimaos_host: str = "http://127.0.0.1:80"

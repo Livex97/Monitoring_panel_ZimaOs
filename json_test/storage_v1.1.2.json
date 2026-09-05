@@ -1,0 +1,57 @@
+{
+    "pools": [
+        {
+            "name": "resolv.conf",
+            "filesystem": "ext4",
+            "mount_point": "/etc/resolv.conf",
+            "total_bytes": 490047844352,
+            "used_bytes": 62509178880,
+            "free_bytes": 427521888256,
+            "usage_percent": 12.8
+        },
+        {
+            "name": "hostname",
+            "filesystem": "ext4",
+            "mount_point": "/etc/hostname",
+            "total_bytes": 490047844352,
+            "used_bytes": 62509178880,
+            "free_bytes": 427521888256,
+            "usage_percent": 12.8
+        },
+        {
+            "name": "hosts",
+            "filesystem": "ext4",
+            "mount_point": "/etc/hosts",
+            "total_bytes": 490047844352,
+            "used_bytes": 62509178880,
+            "free_bytes": 427521888256,
+            "usage_percent": 12.8
+        }
+    ],
+    "disks": [
+        {
+            "name": "nvme0n1",
+            "model": "KINGSTON SKC3000S512G",
+            "capacity_bytes": 512110190592,
+            "temperature_celsius": null,
+            "health": "OK",
+            "smart_status": "PASSED"
+        },
+        {
+            "name": "sdb",
+            "model": "ST2000DM001-1ER1",
+            "capacity_bytes": 2000398934016,
+            "temperature_celsius": null,
+            "health": "OK",
+            "smart_status": "PASSED"
+        },
+        {
+            "name": "sda",
+            "model": "ST2000DM006-2DM1",
+            "capacity_bytes": 2000398934016,
+            "temperature_celsius": null,
+            "health": "OK",
+            "smart_status": "PASSED"
+        }
+    ]
+}

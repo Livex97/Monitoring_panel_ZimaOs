@@ -1,0 +1,53 @@
+services:
+  zimaos-monitor-api:
+    build:
+      context: /tmp/casaos-compose-app-715789701/zimaos-monitor-api
+      dockerfile: Dockerfile
+    command: null
+    container_name: zimaos-monitor-api
+    deploy:
+      resources:
+        limits:
+          memory: 4GB
+          cpus: "1.00"
+        reservations:
+          memory: 256MB
+          cpus: "0.00"
+      placement: {}
+    entrypoint: null
+    environment:
+      MONITOR_API_KEY: ""
+      MONITOR_PORT: "8787"
+    healthcheck:
+      test:
+        - CMD
+        - curl
+        - -f
+        - http://localhost:8787/health
+      timeout: 5s
+      interval: 30s
+      retries: 3
+      start_period: 10s
+    image: ghcr.io/livex97/monitoring_panel_zimaos/zimaos-monitor-api:latest
+    network_mode: bridge
+    ports:
+      - mode: ingress
+        target: 8787
+        published: "8787"
+        protocol: tcp
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /etc:/host/etc:ro
+x-casaos:
+  hostname: ""
+  index: /
+  is_uncontrolled: false
+  main: zimaos-monitor-api
+  port_map: "8787"
+  scheme: http
+  store_app_id: compose-d29bb8ae738b756c
+  title:
+    custom: MonitorPanel

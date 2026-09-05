@@ -5,7 +5,7 @@ services:
     build:
       context: ./zimaos-monitor-api
       dockerfile: Dockerfile
-    image: zimaos-monitor-api:latest
+    image: ghcr.io/livex97/monitoring_panel_zimaos/zimaos-monitor-api:latest
     container_name: zimaos-monitor-api
     restart: unless-stopped
     ports:
@@ -15,11 +15,22 @@ services:
       - MONITOR_API_KEY=${MONITOR_API_KEY:-}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /proc:/proc:ro
-      - /sys:/sys:ro
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /etc:/host/etc:ro
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8787/health"]
       interval: 30s
       timeout: 5s
       retries: 3
       start_period: 10s
+
+x-casaos:
+  hostname: ""
+  index: /
+  is_uncontrolled: false
+  main: zimaos-monitor-api
+  port_map: "8787"
+  scheme: http
+  title:
+    custom: MonitorPanel

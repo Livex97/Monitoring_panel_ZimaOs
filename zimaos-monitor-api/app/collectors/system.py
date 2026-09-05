@@ -1,8 +1,10 @@
 import os
+import re
 import time
 import socket
 import psutil
-from typing import Optional, Tuple
+from typing import Optional
+from app.config import settings
 from app.models import ServerStatus, UptimeInfo, CPUStatus, MemoryStatus, TemperatureStatus
 
 
@@ -16,22 +18,61 @@ def format_uptime(seconds: float) -> str:
 
 def get_server_status() -> ServerStatus:
     hostname = socket.gethostname()
+    
+    # Try reading real host hostname from /host/proc/sys/kernel/hostname or /proc/sys/kernel/hostname or /host/etc/hostname
+    hostname_candidates = [
+        os.path.join(settings.host_proc, "sys/kernel/hostname"),
+        "/proc/sys/kernel/hostname",
+        os.path.join(settings.host_etc, "hostname"),
+        "/etc/hostname"
+    ]
+    for h_path in hostname_candidates:
+        if os.path.exists(h_path):
+            try:
+                with open(h_path, "r") as f:
+                    content = f.read().strip()
+                    if content and not re.match(r"^[0-9a-f]{12}$", content):
+                        hostname = content
+                        break
+            except Exception:
+                pass
+
+    if re.match(r"^[0-9a-f]{12}$", hostname):
+        hostname = "ZimaOS-NAS"
+
     os_name = "ZimaOS"
     version = "1.0.0"
     
-    # Try reading /etc/os-release if available
-    os_release_path = "/etc/os-release"
-    if os.path.exists(os_release_path):
-        try:
-            with open(os_release_path, "r") as f:
-                content = f.read()
-                for line in content.splitlines():
-                    if line.startswith("PRETTY_NAME="):
-                        os_name = line.split("=", 1)[1].strip('"\'')
-                    elif line.startswith("VERSION_ID="):
-                        version = line.split("=", 1)[1].strip('"\'')
-        except Exception:
-            pass
+    # Try reading host os-release
+    os_release_candidates = [
+        os.path.join(settings.host_etc, "zimaos-release"),
+        os.path.join(settings.host_etc, "os-release"),
+        "/etc/os-release"
+    ]
+    for os_path in os_release_candidates:
+        if os.path.exists(os_path):
+            try:
+                with open(os_path, "r") as f:
+                    content = f.read()
+                    name_found = None
+                    ver_found = None
+                    for line in content.splitlines():
+                        if line.startswith("PRETTY_NAME="):
+                            name_found = line.split("=", 1)[1].strip('"\'')
+                        elif line.startswith("NAME=") and not name_found:
+                            name_found = line.split("=", 1)[1].strip('"\'')
+                        elif line.startswith("VERSION_ID="):
+                            ver_found = line.split("=", 1)[1].strip('"\'')
+                        elif line.startswith("VERSION=") and not ver_found:
+                            ver_found = line.split("=", 1)[1].strip('"\'')
+                    if name_found:
+                        os_name = name_found
+                    if ver_found:
+                        version = ver_found
+                    if os_name != "Debian GNU/Linux 13 (trixie)":
+                        break
+            except Exception:
+                pass
 
     return ServerStatus(
         online=True,
@@ -42,8 +83,27 @@ def get_server_status() -> ServerStatus:
 
 
 def get_uptime_info() -> UptimeInfo:
-    boot_time = psutil.boot_time()
-    uptime_seconds = time.time() - boot_time
+    uptime_seconds = 0.0
+    # Try reading /host/proc/uptime or /proc/uptime
+    uptime_candidates = [
+        os.path.join(settings.host_proc, "uptime"),
+        "/proc/uptime"
+    ]
+    for u_path in uptime_candidates:
+        if os.path.exists(u_path):
+            try:
+                with open(u_path, "r") as f:
+                    content = f.read().split()
+                    if content:
+                        uptime_seconds = float(content[0])
+                        break
+            except Exception:
+                pass
+
+    if uptime_seconds == 0.0:
+        boot_time = psutil.boot_time()
+        uptime_seconds = time.time() - boot_time
+
     return UptimeInfo(
         seconds=round(uptime_seconds, 1),
         formatted=format_uptime(uptime_seconds)
@@ -109,22 +169,28 @@ def get_temperature_status() -> TemperatureStatus:
     except Exception:
         pass
 
-    # Fallback to sysfs thermal zone if psutil sensors returns nothing
+    # Fallback to sysfs thermal zones in /host/sys/class/thermal or /sys/class/thermal
     if cpu_temp is None:
-        thermal_dir = "/sys/class/thermal"
-        if os.path.exists(thermal_dir):
-            try:
-                for zone in os.listdir(thermal_dir):
-                    if zone.startswith("thermal_zone"):
-                        temp_path = os.path.join(thermal_dir, zone, "temp")
-                        if os.path.exists(temp_path):
-                            with open(temp_path, "r") as f:
-                                val = float(f.read().strip()) / 1000.0
-                                if 0 < val < 120:  # Reasonable temperature range
-                                    cpu_temp = val
-                                    break
-            except Exception:
-                pass
+        thermal_dirs = [
+            os.path.join(settings.host_sys, "class/thermal"),
+            "/sys/class/thermal"
+        ]
+        for thermal_dir in thermal_dirs:
+            if os.path.exists(thermal_dir):
+                try:
+                    for zone in os.listdir(thermal_dir):
+                        if zone.startswith("thermal_zone"):
+                            temp_path = os.path.join(thermal_dir, zone, "temp")
+                            if os.path.exists(temp_path):
+                                with open(temp_path, "r") as f:
+                                    val = float(f.read().strip()) / 1000.0
+                                    if 0 < val < 120:  # Reasonable temperature range
+                                        cpu_temp = val
+                                        break
+                    if cpu_temp is not None:
+                        break
+                except Exception:
+                    pass
 
     if cpu_temp is not None or sys_temp is not None:
         available = True

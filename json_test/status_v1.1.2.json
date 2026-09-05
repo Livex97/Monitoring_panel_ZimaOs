@@ -1,0 +1,113 @@
+{
+    "schema_version": "1.0",
+    "timestamp": "2026-09-05T15:09:04.368223+00:00",
+    "server": {
+        "online": true,
+        "hostname": "bea2abb12c0c",
+        "os": "Debian GNU/Linux 13 (trixie)",
+        "version": "13"
+    },
+    "uptime": {
+        "seconds": 863329.4,
+        "formatted": "9d 23h 48m"
+    },
+    "cpu": {
+        "usage_percent": 6.6,
+        "load_1m": 0.39,
+        "load_5m": 0.37,
+        "load_15m": 0.31,
+        "cores": 4,
+        "frequency_mhz": 1549.5
+    },
+    "memory": {
+        "total_bytes": 16536907776,
+        "used_bytes": 6765117440,
+        "free_bytes": 433426432,
+        "available_bytes": 9771790336,
+        "usage_percent": 40.9
+    },
+    "temperature": {
+        "cpu_celsius": 32.0,
+        "system_celsius": null,
+        "available": true
+    },
+    "storage": {
+        "pools": [
+            {
+                "name": "resolv.conf",
+                "filesystem": "ext4",
+                "mount_point": "/etc/resolv.conf",
+                "total_bytes": 490047844352,
+                "used_bytes": 62508834816,
+                "free_bytes": 427522232320,
+                "usage_percent": 12.8
+            },
+            {
+                "name": "hostname",
+                "filesystem": "ext4",
+                "mount_point": "/etc/hostname",
+                "total_bytes": 490047844352,
+                "used_bytes": 62508834816,
+                "free_bytes": 427522232320,
+                "usage_percent": 12.8
+            },
+            {
+                "name": "hosts",
+                "filesystem": "ext4",
+                "mount_point": "/etc/hosts",
+                "total_bytes": 490047844352,
+                "used_bytes": 62508834816,
+                "free_bytes": 427522232320,
+                "usage_percent": 12.8
+            }
+        ],
+        "disks": [
+            {
+                "name": "nvme0n1",
+                "model": "KINGSTON SKC3000S512G",
+                "capacity_bytes": 512110190592,
+                "temperature_celsius": null,
+                "health": "OK",
+                "smart_status": "PASSED"
+            },
+            {
+                "name": "sdb",
+                "model": "ST2000DM001-1ER1",
+                "capacity_bytes": 2000398934016,
+                "temperature_celsius": null,
+                "health": "OK",
+                "smart_status": "PASSED"
+            },
+            {
+                "name": "sda",
+                "model": "ST2000DM006-2DM1",
+                "capacity_bytes": 2000398934016,
+                "temperature_celsius": null,
+                "health": "OK",
+                "smart_status": "PASSED"
+            }
+        ]
+    },
+    "docker": {
+        "total": 0,
+        "running": 0,
+        "stopped": 0,
+        "containers": []
+    },
+    "network": {
+        "interfaces": [
+            {
+                "name": "eth0",
+                "rx_bytes": 2414370,
+                "tx_bytes": 18627,
+                "rx_rate_bytes_sec": 227.0,
+                "tx_rate_bytes_sec": 4.0
+            }
+        ]
+    },
+    "health": {
+        "status": "healthy",
+        "warnings": [],
+        "errors": []
+    }
+}

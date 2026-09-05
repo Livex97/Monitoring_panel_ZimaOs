@@ -1,0 +1,11 @@
+{
+    "interfaces": [
+        {
+            "name": "eth0",
+            "rx_bytes": 2471935,
+            "tx_bytes": 24164,
+            "rx_rate_bytes_sec": 296.6,
+            "tx_rate_bytes_sec": 28.5
+        }
+    ]
+}
