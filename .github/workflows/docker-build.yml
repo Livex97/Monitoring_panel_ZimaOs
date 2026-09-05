@@ -9,11 +9,12 @@ on:
       tag_version:
         description: 'Tag version to build and push'
         required: true
-        default: 'v$(date +%Y.%m.%d)'
+        default: 'v1.0.0'
 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+
     permissions:
       contents: read
       packages: write
@@ -33,11 +34,20 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Set lowercase image name
+        id: image
+        run: |
+          echo "name=ghcr.io/${GITHUB_REPOSITORY,,}/zimaos-monitor-api" >> "$GITHUB_OUTPUT"
+
       - name: Extract metadata for Docker image
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/${{ github.repository }}/zimaos-monitor-api
+          images: ${{ steps.image.outputs.name }}
+          tags: |
+            type=ref,event=tag
+            type=raw,value=${{ inputs.tag_version }},enable=${{ github.event_name == 'workflow_dispatch' }}
+            type=raw,value=latest
 
       - name: Build and push Docker image
         id: push
@@ -46,19 +56,19 @@ jobs:
           context: ./zimaos-monitor-api
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: |
-            ghcr.io/${{ github.repository }}/zimaos-monitor-api:${{ github.ref_name }}
-            ghcr.io/${{ github.repository }}/zimaos-monitor-api:latest
-            ghcr.io/${{ github.repository }}/zimaos-monitor-api:${{ inputs.tag_version || github.ref_name }}
+
+          tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
       - name: Create release notes
         run: |
           echo "## Docker Image Built" > release-notes.txt
-          echo "- Image: ${{ steps.push.outputs.imageid }}" >> release-notes.txt
-          echo "- Tags: ghcr.io/${{ github.repository }}/zimaos-monitor-api:${{ github.ref_name }}" >> release-notes.txt
+          echo "- Image: ${{ steps.image.outputs.name }}" >> release-notes.txt
+          echo "- Tags:" >> release-notes.txt
+          echo "${{ steps.meta.outputs.tags }}" >> release-notes.txt
           echo "- Platform: Multi-architecture (amd64, arm64)" >> release-notes.txt
           echo "- Built on: $(date)" >> release-notes.txt
 
