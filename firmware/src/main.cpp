@@ -65,33 +65,44 @@ void loop() {
 
     // Fetch API Metrics periodically when Wi-Fi is connected
     if (connected) {
-        if (!wasConnected || isShowingOffline) {
+        if (!wasConnected) {
             wasConnected = true;
-            isShowingOffline = false;
-            uiManager.switchPage(0);
-            Serial.println("[System] Wi-Fi connected! Switch to Overview screen.");
+            Serial.println("[System] Wi-Fi connected!");
         }
 
         if (millis() - lastApiFetch >= API_REFRESH_INTERVAL_MS) {
             Serial.println("[System] Attempting API fetch...");
             lastApiFetch = millis();
-            
+
             bool success = apiClient.fetchMetrics(currentMetrics);
-            Serial.printf("[System] API fetch returned %s\n", success ? "true" : "false");
-            if (success) {
+            Serial.printf("[System] API fetch returned %s, valid=%s, health='%s'\n",
+                success ? "true" : "false",
+                currentMetrics.valid ? "true" : "false",
+                currentMetrics.health.status.c_str());
+
+            if (success && currentMetrics.valid) {
+                // Switch to overview BEFORE updating widgets so they are visible
+                if (isShowingOffline) {
+                    uiManager.switchPage(0);
+                    isShowingOffline = false;
+                    Serial.println("[System] Switched to Overview screen.");
+                }
                 uiManager.updateData(currentMetrics);
 
-                if (currentMetrics.health.status == "healthy") {
+                String hs = currentMetrics.health.status;
+                if (hs == "healthy" || hs == "") {
                     rgbController.setStatus(LED_STATUS_OK);
-                } else if (currentMetrics.health.status == "warning") {
+                } else if (hs == "warning") {
                     rgbController.setStatus(LED_STATUS_WARNING);
                 } else {
                     rgbController.setStatus(LED_STATUS_CRITICAL);
                 }
             } else {
-                uiManager.showOfflineScreen("Failed to reach ZimaOS API");
+                if (!isShowingOffline) {
+                    uiManager.showOfflineScreen("Failed to reach ZimaOS API");
+                    isShowingOffline = true;
+                }
                 rgbController.setStatus(LED_STATUS_CRITICAL);
-                isShowingOffline = true;
             }
         }
     } else {

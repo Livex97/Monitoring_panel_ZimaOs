@@ -21,7 +21,6 @@ bool APIClient::fetchMetrics(SystemMetrics& outMetrics) {
     }
     testClient.stop(); // connection succeeded
     // ------------------
-    String url = "http://" + m_host + ":" + String(m_port) + "/api/v1/status";
     
     m_http.begin(url);
     m_http.setTimeout(HTTP_TIMEOUT_MS);

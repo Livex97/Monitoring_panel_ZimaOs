@@ -274,6 +274,7 @@ void UIManager::switchPage(uint8_t pageIndex) {
     } else {
         lv_scr_load(m_scrDocker);
     }
+    lv_refr_now(lv_disp_get_default());
 }
 
 void UIManager::nextPage() {
@@ -290,6 +291,7 @@ uint8_t UIManager::getActivePage() const {
 
 void UIManager::showOfflineScreen(const char* reason) {
     lv_scr_load(m_scrOffline);
+    lv_refr_now(lv_disp_get_default());
 }
 
 void UIManager::updateData(const SystemMetrics& metrics) {
