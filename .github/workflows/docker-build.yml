@@ -1,9 +1,10 @@
-name: Build and Push Docker Image
+name: Build, Push and Release
 
 on:
   push:
     tags:
       - 'v*.*.*'
+
   workflow_dispatch:
     inputs:
       tag_version:
@@ -11,22 +12,31 @@ on:
         required: true
         default: 'v1.0.0'
 
+permissions:
+  contents: write
+  packages: write
+  id-token: write
+
 jobs:
-  build-and-push:
+  build-and-release:
     runs-on: ubuntu-latest
 
-    permissions:
-      contents: read
-      packages: write
-      id-token: write
-
     steps:
+      # ---------------------------------------------------------
+      # Checkout
+      # ---------------------------------------------------------
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # ---------------------------------------------------------
+      # Docker Buildx
+      # ---------------------------------------------------------
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      # ---------------------------------------------------------
+      # Login GHCR
+      # ---------------------------------------------------------
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
@@ -34,12 +44,18 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Set lowercase image name
+      # ---------------------------------------------------------
+      # Image name - lowercase
+      # ---------------------------------------------------------
+      - name: Set Docker image name
         id: image
         run: |
           echo "name=ghcr.io/${GITHUB_REPOSITORY,,}/zimaos-monitor-api" >> "$GITHUB_OUTPUT"
 
-      - name: Extract metadata for Docker image
+      # ---------------------------------------------------------
+      # Docker metadata
+      # ---------------------------------------------------------
+      - name: Extract Docker metadata
         id: meta
         uses: docker/metadata-action@v5
         with:
@@ -49,12 +65,19 @@ jobs:
             type=raw,value=${{ inputs.tag_version }},enable=${{ github.event_name == 'workflow_dispatch' }}
             type=raw,value=latest
 
+      # ---------------------------------------------------------
+      # Build and push
+      # ---------------------------------------------------------
       - name: Build and push Docker image
         id: push
         uses: docker/build-push-action@v6
         with:
           context: ./zimaos-monitor-api
-          platforms: linux/amd64,linux/arm64
+
+          platforms: |
+            linux/amd64
+            linux/arm64
+
           push: true
 
           tags: ${{ steps.meta.outputs.tags }}
@@ -63,18 +86,61 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+      # ---------------------------------------------------------
+      # Create release notes
+      # ---------------------------------------------------------
       - name: Create release notes
         run: |
-          echo "## Docker Image Built" > release-notes.txt
-          echo "- Image: ${{ steps.image.outputs.name }}" >> release-notes.txt
-          echo "- Tags:" >> release-notes.txt
-          echo "${{ steps.meta.outputs.tags }}" >> release-notes.txt
-          echo "- Platform: Multi-architecture (amd64, arm64)" >> release-notes.txt
-          echo "- Built on: $(date)" >> release-notes.txt
+          VERSION="${{ github.ref_name }}"
 
-      - name: Upload release notes
-        uses: actions/upload-artifact@v4
-        with:
-          name: release-notes
-          path: release-notes.txt
-          retention-days: 1
+          cat > release-notes.md <<EOF
+          ## Docker Image
+
+          Docker image successfully built and published.
+
+          ### Image
+
+          \`${{ steps.image.outputs.name }}:${VERSION}\`
+
+          ### Platforms
+
+          - linux/amd64
+          - linux/arm64
+
+          ### Docker tags
+
+          - \`${{ steps.image.outputs.name }}:${VERSION}\`
+          - \`${{ steps.image.outputs.name }}:latest\`
+
+          ### Build
+
+          - Commit: \`${{ github.sha }}\`
+          - Workflow: \`${{ github.workflow }}\`
+          - Run: ${{ github.run_id }}
+          EOF
+
+      # ---------------------------------------------------------
+      # Create GitHub Release
+      # ---------------------------------------------------------
+      - name: Create GitHub Release
+        if: github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "${{ github.ref_name }}" \
+            --title "${{ github.ref_name }}" \
+            --generate-notes \
+            --verify-tag
+
+      # ---------------------------------------------------------
+      # Create release manually
+      # ---------------------------------------------------------
+      - name: Create GitHub Release - Manual
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "${{ inputs.tag_version }}" \
+            --title "${{ inputs.tag_version }}" \
+            --notes-file release-notes.md \
+            --verify-tag
