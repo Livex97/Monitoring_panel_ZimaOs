@@ -1,0 +1,240 @@
+{
+    "schema_version": "1.0",
+    "timestamp": "2026-09-05T15:57:36.315203+00:00",
+    "server": {
+        "online": true,
+        "hostname": "ZimaOS",
+        "os": "ZimaOS v1.7.1",
+        "version": "1.7.1"
+    },
+    "uptime": {
+        "seconds": 866239.4,
+        "formatted": "10d 00h 37m"
+    },
+    "cpu": {
+        "usage_percent": 0.0,
+        "load_1m": 0.48,
+        "load_5m": 0.52,
+        "load_15m": 0.61,
+        "cores": 4,
+        "frequency_mhz": 819.0
+    },
+    "memory": {
+        "total_bytes": 16536907776,
+        "used_bytes": 7146590208,
+        "free_bytes": 296222720,
+        "available_bytes": 9390317568,
+        "usage_percent": 43.2
+    },
+    "temperature": {
+        "cpu_celsius": 32.0,
+        "system_celsius": null,
+        "available": true
+    },
+    "storage": {
+        "pools": [
+            {
+                "name": "POOL 1",
+                "filesystem": "ext4",
+                "mount_point": "/",
+                "total_bytes": 490047844352,
+                "used_bytes": 62611591168,
+                "free_bytes": 427419475968,
+                "usage_percent": 12.8
+            }
+        ],
+        "disks": [
+            {
+                "name": "nvme0n1",
+                "model": "KINGSTON SKC3000S512G",
+                "capacity_bytes": 512110190592,
+                "temperature_celsius": null,
+                "health": "OK",
+                "smart_status": "PASSED"
+            },
+            {
+                "name": "sda",
+                "model": "ST2000DM006-2DM1",
+                "capacity_bytes": 2000398934016,
+                "temperature_celsius": null,
+                "health": "OK",
+                "smart_status": "PASSED"
+            },
+            {
+                "name": "sdb",
+                "model": "ST2000DM001-1ER1",
+                "capacity_bytes": 2000398934016,
+                "temperature_celsius": null,
+                "health": "OK",
+                "smart_status": "PASSED"
+            }
+        ]
+    },
+    "docker": {
+        "total": 24,
+        "running": 24,
+        "stopped": 0,
+        "containers": [
+            {
+                "name": "zimaos-monitor-api",
+                "status": "RUNNING",
+                "image": "ghcr.io/livex97/monitoring_panel_zimaos/zimaos-monitor-api:latest",
+                "uptime": "running"
+            },
+            {
+                "name": "trek-app",
+                "status": "RUNNING",
+                "image": "mauriceboe/trek:latest",
+                "uptime": "running"
+            },
+            {
+                "name": "jellyfin",
+                "status": "RUNNING",
+                "image": "linuxserver/jellyfin:latest",
+                "uptime": "running"
+            },
+            {
+                "name": "mariadb",
+                "status": "RUNNING",
+                "image": "linuxserver/mariadb:latest",
+                "uptime": "running"
+            },
+            {
+                "name": "twingate-connector",
+                "status": "RUNNING",
+                "image": "twingate/connector:latest",
+                "uptime": "running"
+            },
+            {
+                "name": "transmission",
+                "status": "RUNNING",
+                "image": "linuxserver/transmission:latest",
+                "uptime": "running"
+            },
+            {
+                "name": "big-bear-stirling-pdf",
+                "status": "RUNNING",
+                "image": "stirlingtools/stirling-pdf:2.14.3",
+                "uptime": "running"
+            },
+            {
+                "name": "big-bear-phpmyadmin",
+                "status": "RUNNING",
+                "image": "phpmyadmin/phpmyadmin:latest",
+                "uptime": "running"
+            },
+            {
+                "name": "metube",
+                "status": "RUNNING",
+                "image": "alexta69/metube:latest",
+                "uptime": "running"
+            },
+            {
+                "name": "plex",
+                "status": "RUNNING",
+                "image": "lscr.io/linuxserver/plex:latest",
+                "uptime": "running"
+            },
+            {
+                "name": "immich-server",
+                "status": "RUNNING",
+                "image": "ghcr.io/immich-app/immich-server:v3.1.0",
+                "uptime": "running"
+            },
+            {
+                "name": "immich-postgres",
+                "status": "RUNNING",
+                "image": "ghcr.io/immich-app/postgres:14-vectorchord0.3.0-pgvectors0.2.0",
+                "uptime": "running"
+            },
+            {
+                "name": "immich-machine-learning",
+                "status": "RUNNING",
+                "image": "ghcr.io/immich-app/immich-machine-learning:v3.1.0",
+                "uptime": "running"
+            },
+            {
+                "name": "immich-redis",
+                "status": "RUNNING",
+                "image": "redis:6.2.20-alpine",
+                "uptime": "running"
+            },
+            {
+                "name": "whisparr",
+                "status": "RUNNING",
+                "image": "ghcr.io/thespad/whisparr:latest",
+                "uptime": "running"
+            },
+            {
+                "name": "big-bear-convertx",
+                "status": "RUNNING",
+                "image": "ghcr.io/c4illin/convertx:v0.17.0",
+                "uptime": "running"
+            },
+            {
+                "name": "radarr",
+                "status": "RUNNING",
+                "image": "linuxserver/radarr:latest",
+                "uptime": "running"
+            },
+            {
+                "name": "prowlarr",
+                "status": "RUNNING",
+                "image": "linuxserver/prowlarr:latest",
+                "uptime": "running"
+            },
+            {
+                "name": "sonarr",
+                "status": "RUNNING",
+                "image": "linuxserver/sonarr:latest",
+                "uptime": "running"
+            },
+            {
+                "name": "tombola",
+                "status": "RUNNING",
+                "image": "ghcr.io/livex97/tombola_2.0:latest",
+                "uptime": "running"
+            },
+            {
+                "name": "qbittorrent",
+                "status": "RUNNING",
+                "image": "ghcr.io/hotio/qbittorrent:release-5.0.4",
+                "uptime": "running"
+            },
+            {
+                "name": "flaresolverr",
+                "status": "RUNNING",
+                "image": "ghcr.io/flaresolverr/flaresolverr:latest",
+                "uptime": "running"
+            },
+            {
+                "name": "dispatcharr",
+                "status": "RUNNING",
+                "image": "ghcr.io/dispatcharr/dispatcharr:latest",
+                "uptime": "running"
+            },
+            {
+                "name": "big-bear-seerr",
+                "status": "RUNNING",
+                "image": "seerr/seerr:latest",
+                "uptime": "running"
+            }
+        ]
+    },
+    "network": {
+        "interfaces": [
+            {
+                "name": "eth0",
+                "rx_bytes": 14989,
+                "tx_bytes": 314,
+                "rx_rate_bytes_sec": 0.0,
+                "tx_rate_bytes_sec": 0.0
+            }
+        ]
+    },
+    "health": {
+        "status": "healthy",
+        "warnings": [],
+        "errors": []
+    }
+}

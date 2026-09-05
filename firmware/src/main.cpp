@@ -21,9 +21,13 @@ UIManager uiManager;
 
 SystemMetrics currentMetrics;
 uint32_t lastApiFetch = 0;
+bool isShowingOffline = false;
+bool wasConnected = false;
 
 void setup() {
     Serial.begin(115200);
+    Serial.setTxTimeoutMs(0);
+    delay(500);
     Serial.println("\n--- ZimaOS NAS Monitoring Panel Firmware v1.0.0 ---");
 
     buttonHandler.begin(PIN_BTN_LEFT, PIN_BTN_RIGHT);
@@ -34,31 +38,46 @@ void setup() {
     apiClient.begin(ZIMAOS_MONITOR_HOST, ZIMAOS_MONITOR_PORT, ZIMAOS_API_KEY);
 
     rgbController.setStatus(LED_STATUS_BUSY);
+    uiManager.showOfflineScreen("Connecting to Wi-Fi...");
+    isShowingOffline = true;
 }
 
 void loop() {
     wifiManager.update();
     rgbController.update();
 
+    bool connected = wifiManager.isConnected();
+
     // Check physical button inputs
     ButtonEvent btnEvt = buttonHandler.update();
     if (btnEvt == BTN_EVENT_LEFT_CLICK) {
         Serial.println("[Button] Left clicked -> Previous Page");
         uiManager.prevPage();
+        isShowingOffline = false;
     } else if (btnEvt == BTN_EVENT_RIGHT_CLICK) {
         Serial.println("[Button] Right clicked -> Next Page");
         uiManager.nextPage();
+        isShowingOffline = false;
     } else if (btnEvt == BTN_EVENT_BOTH_LONG_PRESS) {
         Serial.println("[Button] Both held 3s -> Resetting...");
         ESP.restart();
     }
 
     // Fetch API Metrics periodically when Wi-Fi is connected
-    if (wifiManager.isConnected()) {
+    if (connected) {
+        if (!wasConnected || isShowingOffline) {
+            wasConnected = true;
+            isShowingOffline = false;
+            uiManager.switchPage(0);
+            Serial.println("[System] Wi-Fi connected! Switch to Overview screen.");
+        }
+
         if (millis() - lastApiFetch >= API_REFRESH_INTERVAL_MS) {
+            Serial.println("[System] Attempting API fetch...");
             lastApiFetch = millis();
             
             bool success = apiClient.fetchMetrics(currentMetrics);
+            Serial.printf("[System] API fetch returned %s\n", success ? "true" : "false");
             if (success) {
                 uiManager.updateData(currentMetrics);
 
@@ -72,11 +91,16 @@ void loop() {
             } else {
                 uiManager.showOfflineScreen("Failed to reach ZimaOS API");
                 rgbController.setStatus(LED_STATUS_CRITICAL);
+                isShowingOffline = true;
             }
         }
     } else {
-        uiManager.showOfflineScreen("Connecting to Wi-Fi...");
-        rgbController.setStatus(LED_STATUS_BUSY);
+        if (!isShowingOffline) {
+            uiManager.showOfflineScreen("Connecting to Wi-Fi...");
+            rgbController.setStatus(LED_STATUS_BUSY);
+            isShowingOffline = true;
+            wasConnected = false;
+        }
     }
 
     lv_timer_handler();

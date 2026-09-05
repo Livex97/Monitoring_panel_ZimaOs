@@ -2,6 +2,7 @@
 #define UI_MANAGER_H
 
 #include <lvgl.h>
+#include <TFT_eSPI.h>
 #include "model/data_model.h"
 
 class UIManager {
@@ -13,8 +14,11 @@ public:
     void prevPage();
     uint8_t getActivePage() const;
     void showOfflineScreen(const char* reason = "Unable to reach API");
+    void switchPage(uint8_t pageIndex);
+    TFT_eSPI& getTft() { return m_tft; }
 
 private:
+    TFT_eSPI m_tft;
     uint8_t m_activePage; // 0: Overview, 1: Storage, 2: Docker
     lv_obj_t* m_scrOverview;
     lv_obj_t* m_scrStorage;
@@ -52,7 +56,6 @@ private:
     void buildStorageScreen();
     void buildDockerScreen();
     void buildOfflineScreen();
-    void switchPage(uint8_t pageIndex);
 };
 
 #endif // UI_MANAGER_H

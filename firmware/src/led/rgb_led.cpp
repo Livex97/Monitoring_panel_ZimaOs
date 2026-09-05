@@ -11,10 +11,7 @@ void RGBController::begin(uint8_t pin) {
 }
 
 void RGBController::setRGB(uint8_t r, uint8_t g, uint8_t b) {
-    // Basic RMT / GPIO driver abstraction
-    #ifdef RGB_BUILTIN
     neopixelWrite(m_pin, r, g, b);
-    #endif
 }
 
 void RGBController::setStatus(LedStatus status) {

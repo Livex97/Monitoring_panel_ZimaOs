@@ -10,6 +10,17 @@ void APIClient::begin(const char* host, uint16_t port, const char* apiKey) {
 }
 
 bool APIClient::fetchMetrics(SystemMetrics& outMetrics) {
+    // ----- DEBUG -----
+    String url = "http://" + m_host + ":" + String(m_port) + "/api/v1/status";
+    Serial.printf("[APIClient] Trying %s\n", url.c_str());
+    WiFiClient testClient;
+    if (!testClient.connect(m_host.c_str(), m_port)) {
+        Serial.println("[APIClient] TCP connect failed (host unreachable)");
+        outMetrics.valid = false;
+        return false;
+    }
+    testClient.stop(); // connection succeeded
+    // ------------------
     String url = "http://" + m_host + ":" + String(m_port) + "/api/v1/status";
     
     m_http.begin(url);

@@ -2,10 +2,51 @@
 #include "ui/ui_theme.h"
 #include "config.h"
 
-UIManager::UIManager() : m_activePage(0) {}
+static UIManager* s_uiManagerInstance = nullptr;
+
+static void disp_flush_cb(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color_p) {
+    uint32_t w = (area->x2 - area->x1 + 1);
+    uint32_t h = (area->y2 - area->y1 + 1);
+
+    if (s_uiManagerInstance) {
+        s_uiManagerInstance->getTft().startWrite();
+        s_uiManagerInstance->getTft().setAddrWindow(area->x1, area->y1, w, h);
+        s_uiManagerInstance->getTft().pushColors((uint16_t *)&color_p->full, w * h, true);
+        s_uiManagerInstance->getTft().endWrite();
+    }
+    lv_disp_flush_ready(disp);
+}
+
+UIManager::UIManager() : m_activePage(0) {
+    s_uiManagerInstance = this;
+}
 
 void UIManager::begin() {
+    // 1. Turn ON LCD Backlight Pin (GPIO 48)
+    pinMode(PIN_LCD_BL, OUTPUT);
+    digitalWrite(PIN_LCD_BL, HIGH);
+
+    // 2. Initialize ST7789 display controller
+    m_tft.init();
+    m_tft.setRotation(0);
+    m_tft.invertDisplay(true);
+    m_tft.fillScreen(TFT_BLACK);
+
+    // 3. Initialize LVGL and register display driver
     lv_init();
+
+    static lv_disp_draw_buf_t draw_buf;
+    static lv_color_t buf[SCREEN_WIDTH * 20];
+    lv_disp_draw_buf_init(&draw_buf, buf, NULL, SCREEN_WIDTH * 20);
+
+    static lv_disp_drv_t disp_drv;
+    lv_disp_drv_init(&disp_drv);
+    disp_drv.hor_res = SCREEN_WIDTH;
+    disp_drv.ver_res = SCREEN_HEIGHT;
+    disp_drv.flush_cb = disp_flush_cb;
+    disp_drv.draw_buf = &draw_buf;
+    lv_disp_drv_register(&disp_drv);
+
     buildOverviewScreen();
     buildStorageScreen();
     buildDockerScreen();
