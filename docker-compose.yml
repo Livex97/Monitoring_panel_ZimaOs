@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  zimaos-monitor-api:
+    build:
+      context: ./zimaos-monitor-api
+      dockerfile: Dockerfile
+    image: zimaos-monitor-api:latest
+    container_name: zimaos-monitor-api
+    restart: unless-stopped
+    ports:
+      - "${MONITOR_PORT:-8787}:8787"
+    environment:
+      - MONITOR_PORT=8787
+      - MONITOR_API_KEY=${MONITOR_API_KEY:-}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /proc:/proc:ro
+      - /sys:/sys:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8787/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s

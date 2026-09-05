@@ -1,0 +1,24 @@
+# Python / FastAPI
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.env
+
+# Pytest / Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# PlatformIO / Embedded
+.pio/
+firmware/include/secrets.h
+
+# IDE / OS
+.DS_Store
+.vscode/
+.idea/
