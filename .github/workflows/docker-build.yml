@@ -37,7 +37,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/${{ github.repository_owner }}/zimaos-monitor-api
+          images: ghcr.io/${{ github.repository }}/zimaos-monitor-api
 
       - name: Build and push Docker image
         id: push
@@ -47,9 +47,9 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/zimaos-monitor-api:${{ github.ref_name }}
-            ghcr.io/${{ github.repository_owner }}/zimaos-monitor-api:latest
-            ghcr.io/${{ github.repository_owner }}/zimaos-monitor-api:${{ inputs.tag_version || github.ref_name }}
+            ghcr.io/${{ github.repository }}/zimaos-monitor-api:${{ github.ref_name }}
+            ghcr.io/${{ github.repository }}/zimaos-monitor-api:latest
+            ghcr.io/${{ github.repository }}/zimaos-monitor-api:${{ inputs.tag_version || github.ref_name }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
@@ -58,7 +58,7 @@ jobs:
         run: |
           echo "## Docker Image Built" > release-notes.txt
           echo "- Image: ${{ steps.push.outputs.imageid }}" >> release-notes.txt
-          echo "- Tags: ghcr.io/${{ github.repository_owner }}/zimaos-monitor-api:${{ github.ref_name }}" >> release-notes.txt
+          echo "- Tags: ghcr.io/${{ github.repository }}/zimaos-monitor-api:${{ github.ref_name }}" >> release-notes.txt
           echo "- Platform: Multi-architecture (amd64, arm64)" >> release-notes.txt
           echo "- Built on: $(date)" >> release-notes.txt
 
