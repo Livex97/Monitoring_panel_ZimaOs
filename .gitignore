@@ -22,3 +22,6 @@ firmware/include/secrets.h
 .DS_Store
 .vscode/
 .idea/
+
+# Script
+./build-and-push-docker.sh
