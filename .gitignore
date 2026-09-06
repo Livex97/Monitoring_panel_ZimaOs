@@ -25,3 +25,7 @@ firmware/include/secrets.h
 
 # Script
 ./build-and-push-docker.sh
+
+# WOKWI
+firmware/README-WOKWI.md
+firmware/wokwi.toml

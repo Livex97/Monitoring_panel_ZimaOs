@@ -56,213 +56,367 @@ void UIManager::begin() {
 
 void UIManager::buildOverviewScreen() {
     m_scrOverview = lv_obj_create(NULL);
-    lv_obj_set_style_bg_color(m_scrOverview, COLOR_BG, 0);
+    lv_obj_set_style_bg_color(m_scrOverview, lv_color_black(), 0);
+    lv_obj_set_style_pad_all(m_scrOverview, 8, 0);
 
-    // Title / Header
-    lv_obj_t* title = lv_label_create(m_scrOverview);
-    lv_label_set_text(title, "ZIMAOS");
-    lv_obj_set_style_text_color(title, COLOR_CYAN, 0);
-    lv_obj_align(title, LV_ALIGN_TOP_MID, 0, 10);
+    // Header
+    lv_obj_t* header = lv_label_create(m_scrOverview);
+    lv_label_set_text(header, "ZIMAOS");
+    lv_obj_set_style_text_color(header, lv_color_make(0, 255, 255), 0); // Cyan
+    lv_obj_set_style_text_font(header, &lv_font_montserrat_14, 0);
+    lv_obj_align(header, LV_ALIGN_TOP_MID, 0, 10);
 
-    lv_obj_t* sub = lv_label_create(m_scrOverview);
-    lv_label_set_text(sub, "NAS SERVER");
-    lv_obj_set_style_text_color(sub, COLOR_TEXT_DIM, 0);
-    lv_obj_align(sub, LV_ALIGN_TOP_MID, 0, 26);
+    lv_obj_t* subheader = lv_label_create(m_scrOverview);
+    lv_label_set_text(subheader, "NAS SERVER");
+    lv_obj_set_style_text_color(subheader, lv_color_make(150, 150, 150), 0);
+    lv_obj_set_style_text_font(subheader, &lv_font_montserrat_14, 0);
+    lv_obj_align(subheader, LV_ALIGN_TOP_MID, 0, 25);
 
-    // ONLINE badge
-    lv_obj_t* badge = lv_label_create(m_scrOverview);
-    lv_label_set_text(badge, "ONLINE");
-    lv_obj_set_style_text_color(badge, COLOR_GREEN, 0);
-    lv_obj_align(badge, LV_ALIGN_TOP_MID, 0, 44);
+    // Status indicator (● ONLINE)
+    lv_obj_t* statusContainer = lv_obj_create(m_scrOverview);
+    lv_obj_set_size(statusContainer, 60, 20);
+    lv_obj_align(statusContainer, LV_ALIGN_TOP_MID, 0, 45);
+    lv_obj_set_style_bg_color(statusContainer, lv_color_make(0, 20, 0), 0);
+    lv_obj_set_style_border_width(statusContainer, 1, 0);
+    lv_obj_set_style_border_color(statusContainer, lv_color_make(0, 80, 0), 0);
+    lv_obj_set_style_radius(statusContainer, 4, 0);
+    lv_obj_set_style_pad_all(statusContainer, 2, 0);
 
-    // SYSTEM Panel
-    lv_obj_t* panelSys = lv_obj_create(m_scrOverview);
-    lv_obj_set_size(panelSys, 160, 110);
-    lv_obj_align(panelSys, LV_ALIGN_TOP_MID, 0, 65);
-    lv_obj_set_style_bg_color(panelSys, COLOR_CARD_BG, 0);
-    lv_obj_set_style_border_color(panelSys, COLOR_CARD_BORDER, 0);
+    lv_obj_t* statusDot = lv_label_create(statusContainer);
+    lv_label_set_text(statusDot, "●");
+    lv_obj_set_style_text_color(statusDot, lv_color_make(0, 255, 0), 0); // Green
+    lv_obj_set_style_text_font(statusDot, &lv_font_montserrat_14, 0);
+    lv_obj_align(statusDot, LV_ALIGN_LEFT_MID, 2, 0);
 
-    lv_obj_t* lblSys = lv_label_create(panelSys);
-    lv_label_set_text(lblSys, "SYSTEM");
-    lv_obj_set_style_text_color(lblSys, COLOR_TEXT_DIM, 0);
+    lv_obj_t* statusText = lv_label_create(statusContainer);
+    lv_label_set_text(statusText, "ONLINE");
+    lv_obj_set_style_text_color(statusText, lv_color_make(200, 200, 200), 0);
+    lv_obj_set_style_text_font(statusText, &lv_font_montserrat_14, 0);
+    lv_obj_align(statusText, LV_ALIGN_RIGHT_MID, -2, 0);
 
-    m_lblCpuPercent = lv_label_create(panelSys);
-    lv_label_set_text(m_lblCpuPercent, "CPU  23%");
-    lv_obj_set_style_text_color(m_lblCpuPercent, COLOR_CYAN, 0);
-    lv_obj_align(m_lblCpuPercent, LV_ALIGN_TOP_LEFT, 0, 20);
+    // SYSTEM section
+    lv_obj_t* sysTitle = lv_label_create(m_scrOverview);
+    lv_label_set_text(sysTitle, "SYSTEM");
+    lv_obj_set_style_text_color(sysTitle, lv_color_make(0, 255, 255), 0); // Cyan
+    lv_obj_set_style_text_font(sysTitle, &lv_font_montserrat_14, 0);
+    lv_obj_align(sysTitle, LV_ALIGN_TOP_LEFT, 6, 75);
 
-    m_lblRamPercent = lv_label_create(panelSys);
-    lv_label_set_text(m_lblRamPercent, "RAM  41%");
-    lv_obj_set_style_text_color(m_lblRamPercent, COLOR_PURPLE, 0);
-    lv_obj_align(m_lblRamPercent, LV_ALIGN_TOP_LEFT, 0, 40);
+    lv_obj_t* cpuLabel = lv_label_create(m_scrOverview);
+    lv_label_set_text(cpuLabel, "CPU");
+    lv_obj_set_style_text_color(cpuLabel, lv_color_make(180, 180, 180), 0);
+    lv_obj_set_style_text_font(cpuLabel, &lv_font_montserrat_14, 0);
+    lv_obj_align(cpuLabel, LV_ALIGN_TOP_LEFT, 6, 95);
 
-    m_lblTempCpu = lv_label_create(panelSys);
-    lv_label_set_text(m_lblTempCpu, "TEMP 46 C");
-    lv_obj_set_style_text_color(m_lblTempCpu, COLOR_YELLOW, 0);
-    lv_obj_align(m_lblTempCpu, LV_ALIGN_TOP_LEFT, 0, 60);
+    m_lblCpuPercent = lv_label_create(m_scrOverview);
+    lv_label_set_text(m_lblCpuPercent, "23%");
+    lv_obj_set_style_text_color(m_lblCpuPercent, lv_color_make(0, 255, 255), 0); // Cyan
+    lv_obj_set_style_text_font(m_lblCpuPercent, &lv_font_montserrat_14, 0);
+    lv_obj_align(m_lblCpuPercent, LV_ALIGN_TOP_RIGHT, -6, 95);
 
-    // NETWORK Panel
-    lv_obj_t* panelNet = lv_obj_create(m_scrOverview);
-    lv_obj_set_size(panelNet, 160, 75);
-    lv_obj_align(panelNet, LV_ALIGN_TOP_MID, 0, 180);
-    lv_obj_set_style_bg_color(panelNet, COLOR_CARD_BG, 0);
-    lv_obj_set_style_border_color(panelNet, COLOR_CARD_BORDER, 0);
+    lv_obj_t* ramLabel = lv_label_create(m_scrOverview);
+    lv_label_set_text(ramLabel, "RAM");
+    lv_obj_set_style_text_color(ramLabel, lv_color_make(180, 180, 180), 0);
+    lv_obj_set_style_text_font(ramLabel, &lv_font_montserrat_14, 0);
+    lv_obj_align(ramLabel, LV_ALIGN_TOP_LEFT, 6, 115);
 
-    m_lblNetRx = lv_label_create(panelNet);
-    lv_label_set_text(m_lblNetRx, "DL  48.2 MB/s");
-    lv_obj_set_style_text_color(m_lblNetRx, COLOR_CYAN, 0);
-    lv_obj_align(m_lblNetRx, LV_ALIGN_TOP_LEFT, 0, 15);
+    m_lblRamPercent = lv_label_create(m_scrOverview);
+    lv_label_set_text(m_lblRamPercent, "41%");
+    lv_obj_set_style_text_color(m_lblRamPercent, lv_color_make(180, 0, 255), 0); // Purple
+    lv_obj_set_style_text_font(m_lblRamPercent, &lv_font_montserrat_14, 0);
+    lv_obj_align(m_lblRamPercent, LV_ALIGN_TOP_RIGHT, -6, 115);
 
-    m_lblNetTx = lv_label_create(panelNet);
-    lv_label_set_text(m_lblNetTx, "UL  12.4 MB/s");
-    lv_obj_set_style_text_color(m_lblNetTx, COLOR_PURPLE, 0);
-    lv_obj_align(m_lblNetTx, LV_ALIGN_TOP_LEFT, 0, 35);
+    lv_obj_t* tempLabel = lv_label_create(m_scrOverview);
+    lv_label_set_text(tempLabel, "TMP");
+    lv_obj_set_style_text_color(tempLabel, lv_color_make(180, 180, 180), 0);
+    lv_obj_set_style_text_font(tempLabel, &lv_font_montserrat_14, 0);
+    lv_obj_align(tempLabel, LV_ALIGN_TOP_LEFT, 6, 135);
 
-    // UPTIME Panel
-    lv_obj_t* panelUp = lv_obj_create(m_scrOverview);
-    lv_obj_set_size(panelUp, 160, 45);
-    lv_obj_align(panelUp, LV_ALIGN_TOP_MID, 0, 260);
-    lv_obj_set_style_bg_color(panelUp, COLOR_CARD_BG, 0);
-    lv_obj_set_style_border_color(panelUp, COLOR_CARD_BORDER, 0);
+    m_lblTempCpu = lv_label_create(m_scrOverview);
+    lv_label_set_text(m_lblTempCpu, "46°C");
+    lv_obj_set_style_text_color(m_lblTempCpu, lv_color_make(255, 255, 0), 0); // Yellow
+    lv_obj_set_style_text_font(m_lblTempCpu, &lv_font_montserrat_14, 0);
+    lv_obj_align(m_lblTempCpu, LV_ALIGN_TOP_RIGHT, -6, 135);
 
-    m_lblUptime = lv_label_create(panelUp);
+    // STORAGE section
+    lv_obj_t* storageLabel = lv_label_create(m_scrOverview);
+    lv_label_set_text(storageLabel, "DISK");
+    lv_obj_set_style_text_color(storageLabel, lv_color_make(0, 255, 255), 0); // Cyan
+    lv_obj_set_style_text_font(storageLabel, &lv_font_montserrat_14, 0);
+    lv_obj_align(storageLabel, LV_ALIGN_TOP_LEFT, 6, 165);
+
+    lv_obj_t* storageBg = lv_obj_create(m_scrOverview);
+    lv_obj_set_size(storageBg, 120, 12);
+    lv_obj_align(storageBg, LV_ALIGN_TOP_LEFT, 6, 185);
+    lv_obj_set_style_bg_color(storageBg, lv_color_make(20, 20, 20), 0);
+    lv_obj_set_style_border_width(storageBg, 1, 0);
+    lv_obj_set_style_border_color(storageBg, lv_color_make(50, 50, 50), 0);
+    lv_obj_set_style_radius(storageBg, 6, 0);
+
+    m_storageBar = lv_obj_create(storageBg);
+    lv_obj_set_size(m_storageBar, 0, 12);
+    lv_obj_align(m_storageBar, LV_ALIGN_LEFT_MID, 0, 0);
+    lv_obj_set_style_bg_color(m_storageBar, lv_color_make(0, 255, 0), 0); // Green
+    lv_obj_set_style_radius(m_storageBar, 6, 0);
+
+    lv_obj_t* storagePercent = lv_label_create(m_scrOverview);
+    lv_label_set_text(storagePercent, "78%");
+    lv_obj_set_style_text_color(storagePercent, lv_color_make(255, 255, 255), 0);
+    lv_obj_set_style_text_font(storagePercent, &lv_font_montserrat_14, 0);
+    lv_obj_align(storagePercent, LV_ALIGN_TOP_RIGHT, -6, 183);
+
+    // NETWORK section
+    lv_obj_t* networkLabel = lv_label_create(m_scrOverview);
+    lv_label_set_text(networkLabel, "NET");
+    lv_obj_set_style_text_color(networkLabel, lv_color_make(0, 255, 255), 0); // Cyan
+    lv_obj_set_style_text_font(networkLabel, &lv_font_montserrat_14, 0);
+    lv_obj_align(networkLabel, LV_ALIGN_TOP_LEFT, 6, 215);
+
+    lv_obj_t* dlLabel = lv_label_create(m_scrOverview);
+    lv_label_set_text(dlLabel, "↓");
+    lv_obj_set_style_text_color(dlLabel, lv_color_make(0, 255, 255), 0); // Cyan
+    lv_obj_set_style_text_font(dlLabel, &lv_font_montserrat_14, 0);
+    lv_obj_align(dlLabel, LV_ALIGN_TOP_LEFT, 6, 235);
+
+    m_lblNetRx = lv_label_create(m_scrOverview);
+    lv_label_set_text(m_lblNetRx, "48.2 MB/s");
+    lv_obj_set_style_text_color(m_lblNetRx, lv_color_make(0, 255, 255), 0); // Cyan
+    lv_obj_set_style_text_font(m_lblNetRx, &lv_font_montserrat_14, 0);
+    lv_obj_align(m_lblNetRx, LV_ALIGN_TOP_LEFT, 22, 235);
+
+    lv_obj_t* ulLabel = lv_label_create(m_scrOverview);
+    lv_label_set_text(ulLabel, "↑");
+    lv_obj_set_style_text_color(ulLabel, lv_color_make(180, 0, 255), 0); // Purple
+    lv_obj_set_style_text_font(ulLabel, &lv_font_montserrat_14, 0);
+    lv_obj_align(ulLabel, LV_ALIGN_TOP_LEFT, 6, 255);
+
+    m_lblNetTx = lv_label_create(m_scrOverview);
+    lv_label_set_text(m_lblNetTx, "12.4 MB/s");
+    lv_obj_set_style_text_color(m_lblNetTx, lv_color_make(180, 0, 255), 0); // Purple
+    lv_obj_set_style_text_font(m_lblNetTx, &lv_font_montserrat_14, 0);
+    lv_obj_align(m_lblNetTx, LV_ALIGN_TOP_LEFT, 22, 255);
+
+    // UPTIME section
+    lv_obj_t* uptimeLabel = lv_label_create(m_scrOverview);
+    lv_label_set_text(uptimeLabel, "UP");
+    lv_obj_set_style_text_color(uptimeLabel, lv_color_make(0, 255, 255), 0); // Cyan
+    lv_obj_set_style_text_font(uptimeLabel, &lv_font_montserrat_14, 0);
+    lv_obj_align(uptimeLabel, LV_ALIGN_TOP_LEFT, 6, 285);
+
+    m_lblUptime = lv_label_create(m_scrOverview);
     lv_label_set_text(m_lblUptime, "12d 04h 32m");
-    lv_obj_set_style_text_color(m_lblUptime, COLOR_CYAN, 0);
-    lv_obj_align(m_lblUptime, LV_ALIGN_CENTER, 0, 0);
+    lv_obj_set_style_text_color(m_lblUptime, lv_color_make(0, 255, 255), 0); // Cyan
+    lv_obj_set_style_text_font(m_lblUptime, &lv_font_montserrat_14, 0);
+    lv_obj_align(m_lblUptime, LV_ALIGN_TOP_RIGHT, -6, 285);
 }
 
 void UIManager::buildStorageScreen() {
     m_scrStorage = lv_obj_create(NULL);
-    lv_obj_set_style_bg_color(m_scrStorage, COLOR_BG, 0);
+    lv_obj_set_style_bg_color(m_scrStorage, lv_color_black(), 0);
+    lv_obj_set_style_pad_all(m_scrStorage, 6, 0);
 
     // Header
-    lv_obj_t* title = lv_label_create(m_scrStorage);
-    lv_label_set_text(title, "STORAGE");
-    lv_obj_set_style_text_color(title, COLOR_CYAN, 0);
-    lv_obj_align(title, LV_ALIGN_TOP_MID, 0, 10);
+    lv_obj_t* header = lv_label_create(m_scrStorage);
+    lv_label_set_text(header, "STORAGE");
+    lv_obj_set_style_text_color(header, lv_color_make(0, 255, 255), 0); // Cyan
+    lv_obj_set_style_text_font(header, &lv_font_montserrat_14, 0);
+    lv_obj_align(header, LV_ALIGN_TOP_MID, 0, 6);
 
-    // Pool Gauge Panel
-    lv_obj_t* panelPool = lv_obj_create(m_scrStorage);
-    lv_obj_set_size(panelPool, 160, 95);
-    lv_obj_align(panelPool, LV_ALIGN_TOP_MID, 0, 35);
-    lv_obj_set_style_bg_color(panelPool, COLOR_CARD_BG, 0);
-    lv_obj_set_style_border_color(panelPool, COLOR_CARD_BORDER, 0);
+    // POOL section
+    lv_obj_t* poolTitle = lv_label_create(m_scrStorage);
+    lv_label_set_text(poolTitle, "POOL 1");
+    lv_obj_set_style_text_color(poolTitle, lv_color_make(180, 180, 180), 0);
+    lv_obj_set_style_text_font(poolTitle, &lv_font_montserrat_14, 0);
+    lv_obj_align(poolTitle, LV_ALIGN_TOP_LEFT, 6, 22);
 
-    m_lblPoolPercent = lv_label_create(panelPool);
+    m_lblPoolPercent = lv_label_create(m_scrStorage);
     lv_label_set_text(m_lblPoolPercent, "78%");
-    lv_obj_set_style_text_color(m_lblPoolPercent, COLOR_GREEN, 0);
-    lv_obj_align(m_lblPoolPercent, LV_ALIGN_TOP_MID, 0, 10);
+    lv_obj_set_style_text_color(m_lblPoolPercent, lv_color_make(0, 255, 0), 0); // Green
+    lv_obj_set_style_text_font(m_lblPoolPercent, &lv_font_montserrat_14, 0);
+    lv_obj_align(m_lblPoolPercent, LV_ALIGN_TOP_MID, 0, 40);
 
-    m_lblPoolUsedTotal = lv_label_create(panelPool);
-    lv_label_set_text(m_lblPoolUsedTotal, "1.56 TB / 2.00 TB");
-    lv_obj_set_style_text_color(m_lblPoolUsedTotal, COLOR_TEXT_WHITE, 0);
-    lv_obj_align(m_lblPoolUsedTotal, LV_ALIGN_TOP_MID, 0, 45);
+  m_lblPoolUsedTotal = lv_label_create(m_scrStorage);
+  lv_label_set_text(m_lblPoolUsedTotal, "1.56 TB / 2.00 TB");
+  lv_obj_set_style_text_color(m_lblPoolUsedTotal, lv_color_make(180, 180, 180), 0);
+  lv_obj_set_style_text_font(m_lblPoolUsedTotal, &lv_font_montserrat_14, 0);
+  lv_obj_align(m_lblPoolUsedTotal, LV_ALIGN_TOP_MID, 0, 74);
 
-    // Disk Status Panel
-    lv_obj_t* panelDisk = lv_obj_create(m_scrStorage);
-    lv_obj_set_size(panelDisk, 160, 90);
-    lv_obj_align(panelDisk, LV_ALIGN_TOP_MID, 0, 135);
-    lv_obj_set_style_bg_color(panelDisk, COLOR_CARD_BG, 0);
-    lv_obj_set_style_border_color(panelDisk, COLOR_CARD_BORDER, 0);
+  // DISK STATUS section
+  lv_obj_t* diskStatusTitle = lv_label_create(m_scrStorage);
+  lv_label_set_text(diskStatusTitle, "DISK STATUS");
+  lv_obj_set_style_text_color(diskStatusTitle, lv_color_make(0, 255, 255), 0); // Cyan
+  lv_obj_set_style_text_font(diskStatusTitle, &lv_font_montserrat_14, 0);
+  lv_obj_align(diskStatusTitle, LV_ALIGN_TOP_LEFT, 6, 98);
 
-    m_lblHdd1Status = lv_label_create(panelDisk);
-    lv_label_set_text(m_lblHdd1Status, "HDD 1  OK  42 C");
-    lv_obj_set_style_text_color(m_lblHdd1Status, COLOR_GREEN, 0);
-    lv_obj_align(m_lblHdd1Status, LV_ALIGN_TOP_LEFT, 0, 15);
+  // HDD 1
+  m_lblHdd1Status = lv_label_create(m_scrStorage);
+  lv_label_set_text(m_lblHdd1Status, "HDD 1       ● OK");
+  lv_obj_set_style_text_color(m_lblHdd1Status, lv_color_make(0, 255, 0), 0); // Green
+  lv_obj_set_style_text_font(m_lblHdd1Status, &lv_font_montserrat_14, 0);
+  lv_obj_align(m_lblHdd1Status, LV_ALIGN_TOP_LEFT, 6, 118);
 
-    m_lblHdd2Status = lv_label_create(panelDisk);
-    lv_label_set_text(m_lblHdd2Status, "HDD 2  OK  44 C");
-    lv_obj_set_style_text_color(m_lblHdd2Status, COLOR_GREEN, 0);
-    lv_obj_align(m_lblHdd2Status, LV_ALIGN_TOP_LEFT, 0, 40);
+  m_lblHdd1Size = lv_label_create(m_scrStorage);
+  lv_label_set_text(m_lblHdd1Size, "2.00 TB");
+  lv_obj_set_style_text_color(m_lblHdd1Size, lv_color_make(150, 150, 150), 0);
+  lv_obj_set_style_text_font(m_lblHdd1Size, &lv_font_montserrat_14, 0);
+  lv_obj_align(m_lblHdd1Size, LV_ALIGN_TOP_RIGHT, -6, 118);
 
-    // RAID Panel
-    lv_obj_t* panelRaid = lv_obj_create(m_scrStorage);
-    lv_obj_set_size(panelRaid, 160, 80);
-    lv_obj_align(panelRaid, LV_ALIGN_TOP_MID, 0, 230);
-    lv_obj_set_style_bg_color(panelRaid, COLOR_CARD_BG, 0);
-    lv_obj_set_style_border_color(panelRaid, COLOR_CARD_BORDER, 0);
+  m_lblHdd1Temp = lv_label_create(m_scrStorage);
+  lv_label_set_text(m_lblHdd1Temp, "42°C");
+  lv_obj_set_style_text_color(m_lblHdd1Temp, lv_color_make(255, 255, 0), 0); // Yellow
+  lv_obj_set_style_text_font(m_lblHdd1Temp, &lv_font_montserrat_14, 0);
+  lv_obj_align(m_lblHdd1Temp, LV_ALIGN_TOP_RIGHT, -6, 138);
 
-    lv_obj_t* lblRaidHealth = lv_label_create(panelRaid);
-    lv_label_set_text(lblRaidHealth, "HEALTHY");
-    lv_obj_set_style_text_color(lblRaidHealth, COLOR_GREEN, 0);
-    lv_obj_align(lblRaidHealth, LV_ALIGN_TOP_MID, 0, 10);
+  // HDD 2
+  m_lblHdd2Status = lv_label_create(m_scrStorage);
+  lv_label_set_text(m_lblHdd2Status, "HDD 2       ● OK");
+  lv_obj_set_style_text_color(m_lblHdd2Status, lv_color_make(0, 255, 0), 0); // Green
+  lv_obj_set_style_text_font(m_lblHdd2Status, &lv_font_montserrat_14, 0);
+  lv_obj_align(m_lblHdd2Status, LV_ALIGN_TOP_LEFT, 6, 158);
 
-    lv_obj_t* lblRaidType = lv_label_create(panelRaid);
-    lv_label_set_text(lblRaidType, "RAID 1 Mirroring");
-    lv_obj_set_style_text_color(lblRaidType, COLOR_TEXT_DIM, 0);
-    lv_obj_align(lblRaidType, LV_ALIGN_TOP_MID, 0, 35);
+  m_lblHdd2Size = lv_label_create(m_scrStorage);
+  lv_label_set_text(m_lblHdd2Size, "2.00 TB");
+  lv_obj_set_style_text_color(m_lblHdd2Size, lv_color_make(150, 150, 150), 0);
+  lv_obj_set_style_text_font(m_lblHdd2Size, &lv_font_montserrat_14, 0);
+  lv_obj_align(m_lblHdd2Size, LV_ALIGN_TOP_RIGHT, -6, 158);
+
+  m_lblHdd2Temp = lv_label_create(m_scrStorage);
+  lv_label_set_text(m_lblHdd2Temp, "44°C");
+  lv_obj_set_style_text_color(m_lblHdd2Temp, lv_color_make(255, 255, 0), 0); // Yellow
+  lv_obj_set_style_text_font(m_lblHdd2Temp, &lv_font_montserrat_14, 0);
+  lv_obj_align(m_lblHdd2Temp, LV_ALIGN_TOP_RIGHT, -6, 178);
+
+  // RAID section
+  lv_obj_t* raidTitle = lv_label_create(m_scrStorage);
+  lv_label_set_text(raidTitle, "RAID");
+  lv_obj_set_style_text_color(raidTitle, lv_color_make(0, 255, 255), 0); // Cyan
+  lv_obj_set_style_text_font(raidTitle, &lv_font_montserrat_14, 0);
+  lv_obj_align(raidTitle, LV_ALIGN_TOP_LEFT, 6, 198);
+
+  m_lblRaidHealth = lv_label_create(m_scrStorage);
+  lv_label_set_text(m_lblRaidHealth, "✓ HEALTHY");
+  lv_obj_set_style_text_color(m_lblRaidHealth, lv_color_make(0, 255, 0), 0); // Green
+  lv_obj_set_style_text_font(m_lblRaidHealth, &lv_font_montserrat_14, 0);
+  lv_obj_align(m_lblRaidHealth, LV_ALIGN_TOP_MID, 0, 218);
+
+  m_lblRaidType = lv_label_create(m_scrStorage);
+  lv_label_set_text(m_lblRaidType, "RAID 1");
+  lv_obj_set_style_text_color(m_lblRaidType, lv_color_make(150, 150, 150), 0);
+  lv_obj_set_style_text_font(m_lblRaidType, &lv_font_montserrat_14, 0);
+  lv_obj_align(m_lblRaidType, LV_ALIGN_TOP_MID, 0, 238);
 }
 
 void UIManager::buildDockerScreen() {
     m_scrDocker = lv_obj_create(NULL);
-    lv_obj_set_style_bg_color(m_scrDocker, COLOR_BG, 0);
+    lv_obj_set_style_bg_color(m_scrDocker, lv_color_black(), 0);
+    lv_obj_set_style_pad_all(m_scrDocker, 6, 0);
 
     // Title
-    lv_obj_t* title = lv_label_create(m_scrDocker);
-    lv_label_set_text(title, "DOCKER");
-    lv_obj_set_style_text_color(title, COLOR_CYAN, 0);
-    lv_obj_align(title, LV_ALIGN_TOP_MID, 0, 10);
+    lv_obj_t* header = lv_label_create(m_scrDocker);
+    lv_label_set_text(header, "DOCKER");
+    lv_obj_set_style_text_color(header, lv_color_make(0, 255, 255), 0); // Cyan
+    lv_obj_set_style_text_font(header, &lv_font_montserrat_14, 0);
+    lv_obj_align(header, LV_ALIGN_TOP_MID, 0, 10);
 
-    // Counter Bar
-    lv_obj_t* panelCounter = lv_obj_create(m_scrDocker);
-    lv_obj_set_size(panelCounter, 160, 45);
-    lv_obj_align(panelCounter, LV_ALIGN_TOP_MID, 0, 35);
-    lv_obj_set_style_bg_color(panelCounter, COLOR_CARD_BG, 0);
-    lv_obj_set_style_border_color(panelCounter, COLOR_CARD_BORDER, 0);
+    // Counter bar
+    lv_obj_t* counterBar = lv_obj_create(m_scrDocker);
+    lv_obj_set_size(counterBar, 148, 20);
+    lv_obj_align(counterBar, LV_ALIGN_TOP_MID, 0, 30);
+    lv_obj_set_style_bg_color(counterBar, lv_color_make(15, 15, 15), 0);
+    lv_obj_set_style_border_width(counterBar, 1, 0);
+    lv_obj_set_style_border_color(counterBar, lv_color_make(40, 40, 40), 0);
+    lv_obj_set_style_radius(counterBar, 2, 0);
 
-    m_lblDockerTotal = lv_label_create(panelCounter);
+    m_lblDockerTotal = lv_label_create(counterBar);
     lv_label_set_text(m_lblDockerTotal, "7 TOTAL");
-    lv_obj_set_style_text_color(m_lblDockerTotal, COLOR_CYAN, 0);
-    lv_obj_align(m_lblDockerTotal, LV_ALIGN_LEFT_MID, 0, 0);
+    lv_obj_set_style_text_color(m_lblDockerTotal, lv_color_make(0, 255, 255), 0); // Cyan
+    lv_obj_set_style_text_font(m_lblDockerTotal, &lv_font_montserrat_14, 0);
+    lv_obj_align(m_lblDockerTotal, LV_ALIGN_LEFT_MID, -36, 0);
 
-    m_lblDockerRunning = lv_label_create(panelCounter);
-    lv_label_set_text(m_lblDockerRunning, "7 RUN");
-    lv_obj_set_style_text_color(m_lblDockerRunning, COLOR_GREEN, 0);
+    m_lblDockerRunning = lv_label_create(counterBar);
+    lv_label_set_text(m_lblDockerRunning, "7 RUNNING");
+    lv_obj_set_style_text_color(m_lblDockerRunning, lv_color_make(0, 255, 0), 0); // Green
+    lv_obj_set_style_text_font(m_lblDockerRunning, &lv_font_montserrat_14, 0);
     lv_obj_align(m_lblDockerRunning, LV_ALIGN_CENTER, 0, 0);
 
-    m_lblDockerStopped = lv_label_create(panelCounter);
-    lv_label_set_text(m_lblDockerStopped, "0 STOP");
-    lv_obj_set_style_text_color(m_lblDockerStopped, COLOR_RED, 0);
-    lv_obj_align(m_lblDockerStopped, LV_ALIGN_RIGHT_MID, 0, 0);
+    m_lblDockerStopped = lv_label_create(counterBar);
+    lv_label_set_text(m_lblDockerStopped, "0 STOPPED");
+    lv_obj_set_style_text_color(m_lblDockerStopped, lv_color_make(255, 0, 0), 0); // Red
+    lv_obj_set_style_text_font(m_lblDockerStopped, &lv_font_montserrat_14, 0);
+    lv_obj_align(m_lblDockerStopped, LV_ALIGN_RIGHT_MID, 36, 0);
 
-    // Container List Container
+    // Container list title
+    lv_obj_t* containersTitle = lv_label_create(m_scrDocker);
+    lv_label_set_text(containersTitle, "CONTAINERS");
+    lv_obj_set_style_text_color(containersTitle, lv_color_make(0, 255, 255), 0); // Cyan
+    lv_obj_set_style_text_font(containersTitle, &lv_font_montserrat_14, 0);
+    lv_obj_align(containersTitle, LV_ALIGN_TOP_LEFT, 6, 60);
+
+    // Container list container
     m_listContainers = lv_obj_create(m_scrDocker);
-    lv_obj_set_size(m_listContainers, 160, 175);
-    lv_obj_align(m_listContainers, LV_ALIGN_TOP_MID, 0, 85);
-    lv_obj_set_style_bg_color(m_listContainers, COLOR_CARD_BG, 0);
-    lv_obj_set_style_border_color(m_listContainers, COLOR_CARD_BORDER, 0);
+    lv_obj_set_size(m_listContainers, 148, 180);
+    lv_obj_align(m_listContainers, LV_ALIGN_TOP_MID, 0, 70);
+    lv_obj_set_style_bg_color(m_listContainers, lv_color_make(15, 15, 15), 0);
+    lv_obj_set_style_border_width(m_listContainers, 1, 0);
+    lv_obj_set_style_border_color(m_listContainers, lv_color_make(40, 40, 40), 0);
+    lv_obj_set_style_radius(m_listContainers, 2, 0);
+    lv_obj_set_style_pad_all(m_listContainers, 4, 0);
 
-    // System Alerts Panel
-    lv_obj_t* panelAlerts = lv_obj_create(m_scrDocker);
-    lv_obj_set_size(panelAlerts, 160, 45);
-    lv_obj_align(panelAlerts, LV_ALIGN_TOP_MID, 0, 265);
-    lv_obj_set_style_bg_color(panelAlerts, COLOR_CARD_BG, 0);
-    lv_obj_set_style_border_color(panelAlerts, COLOR_CARD_BORDER, 0);
+    // Create container items (we'll update these in updateData)
+    m_containerItems.clear();
+    for (int i = 0; i < 5; i++) { // Max 5 containers visible
+        lv_obj_t* containerItem = lv_obj_create(m_listContainers);
+        lv_obj_set_size(containerItem, 140, 22);
+        lv_obj_align(containerItem, LV_ALIGN_TOP_MID, 0, i * 25);
+        lv_obj_set_style_bg_color(containerItem, lv_color_make(20, 20, 20), 0);
+        lv_obj_set_style_border_width(containerItem, 1, 0);
+        lv_obj_set_style_border_color(containerItem, lv_color_make(30, 30, 30), 0);
+        lv_obj_set_style_radius(containerItem, 2, 0);
+        lv_obj_set_style_pad_all(containerItem, 4, 0);
 
-    lv_obj_t* lblAlert = lv_label_create(panelAlerts);
-    lv_label_set_text(lblAlert, "NO ALERTS");
-    lv_obj_set_style_text_color(lblAlert, COLOR_GREEN, 0);
-    lv_obj_align(lblAlert, LV_ALIGN_CENTER, 0, 0);
+        lv_obj_t* statusDot = lv_label_create(containerItem);
+        lv_label_set_text(statusDot, "●");
+        lv_obj_set_style_text_color(statusDot, lv_color_make(0, 255, 0), 0); // Green
+        lv_obj_set_style_text_font(statusDot, &lv_font_montserrat_14, 0);
+        lv_obj_align(statusDot, LV_ALIGN_LEFT_MID, 2, 0);
+
+        lv_obj_t* containerName = lv_label_create(containerItem);
+        lv_label_set_text(containerName, "Container Name");
+        lv_obj_set_style_text_color(containerName, lv_color_make(180, 180, 180), 0);
+        lv_obj_set_style_text_font(containerName, &lv_font_montserrat_14, 0);
+        lv_obj_align(containerName, LV_ALIGN_LEFT_MID, 10, 0);
+
+        lv_obj_t* containerStatus = lv_label_create(containerItem);
+        lv_label_set_text(containerStatus, "UP");
+        lv_obj_set_style_text_color(containerStatus, lv_color_make(0, 255, 0), 0); // Green
+        lv_obj_set_style_text_font(containerStatus, &lv_font_montserrat_14, 0);
+        lv_obj_align(containerStatus, LV_ALIGN_RIGHT_MID, -6, 0);
+
+        m_containerItems.push_back({containerItem, statusDot, containerName, containerStatus});
+    }
 }
 
 void UIManager::buildOfflineScreen() {
     m_scrOffline = lv_obj_create(NULL);
-    lv_obj_set_style_bg_color(m_scrOffline, COLOR_BG, 0);
+    lv_obj_set_style_bg_color(m_scrOffline, lv_color_black(), 0);
+    lv_obj_set_style_pad_all(m_scrOffline, 6, 0);
 
     lv_obj_t* title = lv_label_create(m_scrOffline);
     lv_label_set_text(title, "ZIMAOS");
-    lv_obj_set_style_text_color(title, COLOR_CYAN, 0);
-    lv_obj_align(title, LV_ALIGN_TOP_MID, 0, 30);
+    lv_obj_set_style_text_color(title, lv_color_make(0, 255, 255), 0); // Cyan
+  lv_obj_set_style_text_font(title, &lv_font_montserrat_14, 0);
+  lv_obj_align(title, LV_ALIGN_TOP_MID, 0, 18);
 
-    lv_obj_t* badge = lv_label_create(m_scrOffline);
-    lv_label_set_text(badge, "OFFLINE");
-    lv_obj_set_style_text_color(badge, COLOR_RED, 0);
-    lv_obj_align(badge, LV_ALIGN_TOP_MID, 0, 60);
+  lv_obj_t* badge = lv_label_create(m_scrOffline);
+  lv_label_set_text(badge, "● OFFLINE");
+  lv_obj_set_style_text_color(badge, lv_color_make(255, 0, 0), 0); // Red
+  lv_obj_set_style_text_font(badge, &lv_font_montserrat_14, 0);
+  lv_obj_align(badge, LV_ALIGN_TOP_MID, 0, 38);
 
-    lv_obj_t* msg = lv_label_create(m_scrOffline);
-    lv_label_set_text(msg, "Unable to reach\nmonitor API\n\nRetrying...");
-    lv_obj_set_style_text_color(msg, COLOR_TEXT_DIM, 0);
-    lv_obj_align(msg, LV_ALIGN_CENTER, 0, 20);
+  lv_obj_t* msg = lv_label_create(m_scrOffline);
+  lv_label_set_text(msg, "Unable to reach\nmonitor API\n\nRetrying...");
+  lv_obj_set_style_text_color(msg, lv_color_make(150, 150, 150), 0);
+  lv_obj_set_style_text_font(msg, &lv_font_montserrat_14, 0);
+  lv_obj_align(msg, LV_ALIGN_CENTER, 0, 50);
 }
 
 void UIManager::switchPage(uint8_t pageIndex) {
@@ -315,37 +469,107 @@ void UIManager::updateData(const SystemMetrics& metrics) {
     lv_label_set_text(m_lblNetRx, buf);
 
     snprintf(buf, sizeof(buf), "UL  %.1f MB/s", metrics.network.total_tx_mb_s);
-    lv_label_set_text(m_lblNetTx, buf);
+  lv_label_set_text(m_lblNetTx, buf);
 
-    lv_label_set_text(m_lblUptime, metrics.uptime.formatted.c_str());
+  lv_label_set_text(m_lblUptime, metrics.uptime.formatted.c_str());
 
-    // Storage update
-    if (!metrics.storage.pools.empty()) {
-        snprintf(buf, sizeof(buf), "%.1f%%", metrics.storage.pools[0].usage_percent);
-        lv_label_set_text(m_lblPoolPercent, buf);
+  // Storage update
+  if (!metrics.storage.pools.empty()) {
+    float poolPercent = metrics.storage.pools[0].usage_percent;
+    snprintf(buf, sizeof(buf), "%.0f%%", poolPercent);
+    lv_label_set_text(m_lblPoolPercent, buf);
 
-        double usedTB = (double)metrics.storage.pools[0].used_bytes / 1e12;
-        double totalTB = (double)metrics.storage.pools[0].total_bytes / 1e12;
-        snprintf(buf, sizeof(buf), "%.2f TB / %.2f TB", usedTB, totalTB);
-        lv_label_set_text(m_lblPoolUsedTotal, buf);
+    // Update storage bar width (max 120px)
+    int barWidth = (int)((poolPercent / 100.0f) * 120.0f);
+  lv_obj_set_size(m_storageBar, barWidth, 10);
+
+  double usedTB = (double)metrics.storage.pools[0].used_bytes / 1e12;
+  double totalTB = (double)metrics.storage.pools[0].total_bytes / 1e12;
+  snprintf(buf, sizeof(buf), "%.2f TB / %.2f TB", usedTB, totalTB);
+  lv_label_set_text(m_lblPoolUsedTotal, buf);
+  }
+
+  // Update disk status
+  for (size_t i = 0; i < metrics.storage.disks.size() && i < 2; i++) {
+    const auto& disk = metrics.storage.disks[i];
+    if (i == 0) {
+      snprintf(buf, sizeof(buf), "HDD 1       ● %s", 
+               disk.health == "OK" ? "OK" : 
+               disk.health == "warning" ? "WARN" : "ERR");
+      lv_label_set_text(m_lblHdd1Status, buf);
+      
+      snprintf(buf, sizeof(buf), "%.2f TB", (double)disk.capacity_bytes / 1e12);
+      lv_label_set_text(m_lblHdd1Size, buf);
+      
+      snprintf(buf, sizeof(buf), "%.0f°C", disk.temp_celsius);
+      lv_label_set_text(m_lblHdd1Temp, buf);
+    } else if (i == 1) {
+      snprintf(buf, sizeof(buf), "HDD 2       ● %s", 
+               disk.health == "OK" ? "OK" : 
+               disk.health == "warning" ? "WARN" : "ERR");
+      lv_label_set_text(m_lblHdd2Status, buf);
+      
+      snprintf(buf, sizeof(buf), "%.2f TB", (double)disk.capacity_bytes / 1e12);
+      lv_label_set_text(m_lblHdd2Size, buf);
+      
+      snprintf(buf, sizeof(buf), "%.0f°C", disk.temp_celsius);
+      lv_label_set_text(m_lblHdd2Temp, buf);
     }
+  }
 
-    if (metrics.storage.disks.size() >= 1) {
-        snprintf(buf, sizeof(buf), "%s  OK  %.0f C", metrics.storage.disks[0].name.c_str(), metrics.storage.disks[0].temp_celsius);
-        lv_label_set_text(m_lblHdd1Status, buf);
+  // Update RAID status (simplified - use first pool status or default)
+  if (!metrics.storage.pools.empty()) {
+    const auto& pool = metrics.storage.pools[0];
+    lv_label_set_text(m_lblRaidHealth, 
+                     pool.usage_percent < 80 ? "✓ HEALTHY" : 
+                     pool.usage_percent < 95 ? "⚠ WARNING" : "✗ CRITICAL");
+    lv_label_set_text(m_lblRaidType, "RAID 1"); // Simplified - could get from metadata
+  } else {
+    lv_label_set_text(m_lblRaidHealth, "✓ HEALTHY");
+    lv_label_set_text(m_lblRaidType, "RAID 1");
+  }
+
+  // Docker update
+  snprintf(buf, sizeof(buf), "%d TOTAL", metrics.docker.total);
+  lv_label_set_text(m_lblDockerTotal, buf);
+
+  snprintf(buf, sizeof(buf), "%d RUNNING", metrics.docker.running);
+  lv_label_set_text(m_lblDockerRunning, buf);
+
+  snprintf(buf, sizeof(buf), "%d STOPPED", metrics.docker.stopped);
+  lv_label_set_text(m_lblDockerStopped, buf);
+
+  // Update container list
+  size_t containerCount = std::min(metrics.docker.containers.size(), m_containerItems.size());
+  for (size_t i = 0; i < containerCount; i++) {
+    const auto& container = metrics.docker.containers[i];
+    auto& item = m_containerItems[i];
+    
+    lv_label_set_text(item.containerName, container.name.c_str());
+    
+    // Status dot color
+    lv_color_t dotColor = lv_color_make(0, 255, 0); // Green for running
+    if (container.status == "exited" || container.status == "stopped") {
+      dotColor = lv_color_make(255, 0, 0); // Red
+    } else if (container.status == "paused") {
+      dotColor = lv_color_make(255, 165, 0); // Orange
+    } else if (container.status == "created") {
+      dotColor = lv_color_make(0, 165, 255); // Blue
     }
-    if (metrics.storage.disks.size() >= 2) {
-        snprintf(buf, sizeof(buf), "%s  OK  %.0f C", metrics.storage.disks[1].name.c_str(), metrics.storage.disks[1].temp_celsius);
-        lv_label_set_text(m_lblHdd2Status, buf);
-    }
-
-    // Docker update
-    snprintf(buf, sizeof(buf), "%d TOT", metrics.docker.total);
-    lv_label_set_text(m_lblDockerTotal, buf);
-
-    snprintf(buf, sizeof(buf), "%d RUN", metrics.docker.running);
-    lv_label_set_text(m_lblDockerRunning, buf);
-
-    snprintf(buf, sizeof(buf), "%d STOP", metrics.docker.stopped);
-    lv_label_set_text(m_lblDockerStopped, buf);
+    lv_obj_set_style_text_color(item.statusDot, dotColor, 0);
+    
+    lv_label_set_text(item.containerStatus, 
+                     container.status == "running" ? "UP" : 
+                     container.status == "exited" || container.status == "stopped" ? "DOWN" : 
+                     container.status == "paused" ? "PAUSED" : 
+                     container.status == "created" ? "CREATED" : container.status.c_str());
+  }
+  
+  // Hide unused container items
+  for (size_t i = containerCount; i < m_containerItems.size(); i++) {
+    lv_obj_add_flag(m_containerItems[i].containerItem, LV_OBJ_FLAG_HIDDEN);
+  }
+  for (size_t i = 0; i < containerCount; i++) {
+    lv_obj_clear_flag(m_containerItems[i].containerItem, LV_OBJ_FLAG_HIDDEN);
+  }
 }

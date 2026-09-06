@@ -4,6 +4,7 @@
 #include <lvgl.h>
 #include <TFT_eSPI.h>
 #include "model/data_model.h"
+#include <vector>
 
 class UIManager {
 public:
@@ -26,31 +27,39 @@ private:
     lv_obj_t* m_scrOffline;
 
     // Overview widgets
-    lv_obj_t* m_lblHostName;
     lv_obj_t* m_lblCpuPercent;
-    lv_obj_t* m_arcCpu;
     lv_obj_t* m_lblRamPercent;
-    lv_obj_t* m_arcRam;
     lv_obj_t* m_lblTempCpu;
     lv_obj_t* m_lblNetRx;
     lv_obj_t* m_lblNetTx;
     lv_obj_t* m_lblUptime;
+    lv_obj_t* m_storageBar; // Storage progress bar fill
 
     // Storage widgets
     lv_obj_t* m_lblPoolPercent;
-    lv_obj_t* m_arcPool;
     lv_obj_t* m_lblPoolUsedTotal;
     lv_obj_t* m_lblHdd1Status;
+    lv_obj_t* m_lblHdd1Size;
+    lv_obj_t* m_lblHdd1Temp;
     lv_obj_t* m_lblHdd2Status;
-    lv_obj_t* m_lblSpaceUsed;
-    lv_obj_t* m_lblSpaceFree;
-    lv_obj_t* m_lblSpaceTotal;
+    lv_obj_t* m_lblHdd2Size;
+    lv_obj_t* m_lblHdd2Temp;
+    lv_obj_t* m_lblRaidHealth;
+    lv_obj_t* m_lblRaidType;
 
     // Docker widgets
     lv_obj_t* m_lblDockerTotal;
     lv_obj_t* m_lblDockerRunning;
     lv_obj_t* m_lblDockerStopped;
     lv_obj_t* m_listContainers;
+    
+    struct ContainerItem {
+        lv_obj_t* containerItem;
+        lv_obj_t* statusDot;
+        lv_obj_t* containerName;
+        lv_obj_t* containerStatus;
+    };
+    std::vector<ContainerItem> m_containerItems;
 
     void buildOverviewScreen();
     void buildStorageScreen();
