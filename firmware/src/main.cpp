@@ -1,6 +1,8 @@
 #include <Arduino.h>
 #include "config.h"
 #include "network/wifi_manager.h"
+#include "network/ota_manager.h"
+#include "network/web_server.h"
 #include "api/api_client.h"
 #include "input/button_handler.h"
 #include "led/rgb_led.h"
@@ -18,6 +20,8 @@ APIClient apiClient;
 ButtonHandler buttonHandler;
 RGBController rgbController;
 UIManager uiManager;
+OTAManager otaManager;
+WebServerManager webServer;
 
 SystemMetrics currentMetrics;
 uint32_t lastApiFetch = 0;
@@ -28,7 +32,8 @@ void setup() {
     Serial.begin(115200);
     Serial.setTxTimeoutMs(0);
     delay(500);
-    Serial.println("\n--- ZimaOS NAS Monitoring Panel Firmware v1.0.0 ---");
+    Serial.println("\n--- ZimaOS NAS Monitoring Panel Firmware v" FIRMWARE_VERSION " ---");
+    Serial.printf("[System] Build date: %s\n", FIRMWARE_BUILD_DATE);
 
     buttonHandler.begin(PIN_BTN_LEFT, PIN_BTN_RIGHT);
     rgbController.begin(PIN_RGB_LED);
@@ -36,6 +41,28 @@ void setup() {
 
     wifiManager.begin(WIFI_SSID, WIFI_PASSWORD);
     apiClient.begin(ZIMAOS_MONITOR_HOST, ZIMAOS_MONITOR_PORT, ZIMAOS_API_KEY);
+
+    // Initialize OTA Manager
+    otaManager.begin();
+    // Optional: Set callbacks for UI feedback during OTA
+    otaManager.setStatusCallback([](const char* status) {
+        uiManager.showOfflineScreen(status);
+    });
+    otaManager.setProgressCallback([](int progress, int total) {
+        if (total > 0) {
+            int pct = (progress * 100) / total;
+            Serial.printf("[OTA UI] Progress: %d%%\n", pct);
+            // Could update a progress bar on screen here
+        }
+    });
+    otaManager.setErrorCallback([](const char* error) {
+        String msg = "OTA Error: ";
+        msg += error;
+        uiManager.showOfflineScreen(msg.c_str());
+    });
+
+    // Initialize Web Server
+    webServer.begin();
 
     rgbController.setStatus(LED_STATUS_BUSY);
     uiManager.showOfflineScreen("Connecting to Wi-Fi...");
@@ -45,6 +72,8 @@ void setup() {
 void loop() {
     wifiManager.update();
     rgbController.update();
+    otaManager.update(); // Handle ArduinoOTA
+    webServer.handleClient(); // Handle web server requests
 
     bool connected = wifiManager.isConnected();
 

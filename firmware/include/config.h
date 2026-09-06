@@ -23,4 +23,27 @@
 #define HTTP_TIMEOUT_MS         2500   // 2.5 seconds timeout
 #define BUTTON_DEBOUNCE_MS      50
 
+// Firmware Version (update on each release)
+#define FIRMWARE_VERSION        "1.1.1"
+#define FIRMWARE_BUILD_DATE     __DATE__ " " __TIME__
+
+// OTA Configuration
+#define OTA_ENABLED             1
+#define OTA_HOSTNAME            "zimaos-panel"
+#define OTA_PASSWORD            ""  // Set a password for security if desired
+#define OTA_PORT                3232  // Default ArduinoOTA port
+#define OTA_CHECK_INTERVAL_MS   3600000  // Check for HTTP OTA updates every hour (optional)
+
+// Network Configuration
+#define USE_STATIC_IP           1
+#define STATIC_IP               IPAddress(192, 168, 1, 38)
+#define STATIC_GATEWAY          IPAddress(192, 168, 1, 1)
+#define STATIC_SUBNET           IPAddress(255, 255, 255, 0)
+#define STATIC_DNS1             IPAddress(8, 8, 8, 8)
+#define STATIC_DNS2             IPAddress(8, 8, 4, 4)
+
+// Web Server Configuration
+#define ENABLE_WEB_SERVER       1
+#define WEB_SERVER_PORT         80
+
 #endif // CONFIG_H

@@ -1,4 +1,5 @@
 #include "network/wifi_manager.h"
+#include "config.h"
 
 WiFiManager::WiFiManager() 
     : m_ssid(nullptr), m_password(nullptr), m_lastReconnectAttempt(0), m_connected(false) {}
@@ -8,8 +9,19 @@ void WiFiManager::begin(const char* ssid, const char* password) {
     m_password = password;
     WiFi.mode(WIFI_STA);
     WiFi.setAutoReconnect(true);
+
+#if USE_STATIC_IP
+    if (!WiFi.config(STATIC_IP, STATIC_GATEWAY, STATIC_SUBNET, STATIC_DNS1, STATIC_DNS2)) {
+        Serial.println("[WiFi] STA Failed to configure");
+    }
+#endif
+
     WiFi.begin(m_ssid, m_password);
-    Serial.printf("[WiFi] Connecting to %s...\n", m_ssid);
+    Serial.printf("[WiFi] Connecting to %s...", m_ssid);
+#if USE_STATIC_IP
+    Serial.printf(" with static IP %s", STATIC_IP.toString().c_str());
+#endif
+    Serial.println("");
 }
 
 void WiFiManager::update() {
